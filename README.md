@@ -15,3 +15,5 @@ Commands:
    rm                    Remove a todo.
    check                 Check or uncheck a todo.
 ```
+
+Using [flatdb](https://github.com/uleelx/FlatDB) to store todos.
