@@ -74,7 +74,7 @@ local function list_todos(_)
 	end
 
 	category = db.todos[category]
-
+	print(category.__name)
 	for k, v in ipairs(category) do
 		local check = ""
 		if v.check then
@@ -145,6 +145,7 @@ add_cmd:argument("text", 'The task text. between " "'):args(1)
 
 local list_cmd = parser:command("list"):summary("Lists all the tasks from a category.")
 list_cmd:option("-c --category", "To specify another category instead of the default one.")
+list_cmd:flag("-C --categories", "List categories")
 
 local rm_cmd = parser:command("rm"):summary("Remove a task.")
 rm_cmd:option(
@@ -183,6 +184,9 @@ if args.add then
 	end
 	add_todo(args.text, args.category)
 elseif args.list then
+	if args.categories then
+		return list_categories()
+	end
 	if args.category then
 		if not category_exists(args.category) then
 			print_no_category()
