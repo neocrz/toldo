@@ -20,6 +20,14 @@ Commands:
    add                   Add a new task.
 ```
 
+## Dependencies
+
+They are already included under the `dep` folder. No need to install.
+
+- [flatdb](https://github.com/uleelx/FlatDB) to store tasks.
+- [Classic](https://github.com/rxi/classic) to make the Category Manager and Category classes.
+- [argparse](https://github.com/luarocks/argparse/tree/master) to handle inputs.
+
 ## Status
 
 - [ ] Tasks
@@ -33,6 +41,3 @@ Commands:
   - [x] Add categories
   - [x] List categories
   - [x] Default category
-
-Using [flatdb](https://github.com/uleelx/FlatDB) by [uleelx](https://github.com/uleelx) to store todos.
-Using [Classic](https://github.com/rxi/classic) by [rxi](https://github.com/rxi) to OOP on the Category Manager.

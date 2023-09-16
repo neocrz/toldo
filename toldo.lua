@@ -1,26 +1,27 @@
--- external Dependencies
-local path = require("pl.path")
-local argparse = require("argparse")
-
-
 -- function to get this folder from any pwd path
-local function get_script_path()
-	local script_dir = path.dirname(_G.arg[0])
-	if #script_dir == 0 then
-		script_dir = "./"
+local function get_script_path(filePath)
+	-- Use a regular expression to match the base folder
+	local baseFolder = string.match(filePath, "(.-)[\\/][^\\/]*$")
+
+	-- Check if a base folder was found, if not, the path is actualy ./
+	if baseFolder then
+		return baseFolder
+	else
+		return "./"
 	end
-	return script_dir
 end
 
 -- Adding this path to the package.path to handle requires
-THIS_DIR = get_script_path()
+THIS_DIR = get_script_path(arg[0])
 
 -- Adding dep (dependencies) folder
 package.path = THIS_DIR .. "/dep/?.lua;" .. THIS_DIR .. "/dep/?/init.lua;" .. package.path
 -- Adding lib (libraries) folder
 package.path = THIS_DIR .. "/lib/?.lua;" .. THIS_DIR .. "/lib/?/init.lua;" .. package.path
 
-
+if not argparse then
+	argparse = require("argparse")
+end
 
 -- Extenal dependency (path based)
 local flatdb = require("flatdb")
