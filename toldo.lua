@@ -1,7 +1,7 @@
----[===[ Dependencies
+-- external Dependencies
 local path = require("pl.path")
 local argparse = require("argparse")
----]===]
+
 
 -- function to get this folder from any pwd path
 local function get_script_path()
@@ -20,29 +20,23 @@ package.path = THIS_DIR .. "/dep/?.lua;" .. THIS_DIR .. "/dep/?/init.lua;" .. pa
 -- Adding lib (libraries) folder
 package.path = THIS_DIR .. "/lib/?.lua;" .. THIS_DIR .. "/lib/?/init.lua;" .. package.path
 
-local parser = argparse():name("toldo"):description("Todo list with lua.")
+
+
+-- Extenal dependency (path based)
+local flatdb = require("flatdb")
 
 local Models = require("models")
-local flatdb = require("flatdb")
+local parser = argparse():name("toldo"):description("Todo list with lua.")
+
+
 local db = flatdb(THIS_DIR .. "/db")
 
 -- Gen a CategoryManager Instance
 local CategoryManager = Models.CategoryManager(db)()
+-- Get command_case functions with what to do
+local cmds_functions = require("cmdsf")(CategoryManager, db)
 
 
---[=[
-CategoryManager:add_category("test")
-CategoryManager:list_categories()
-CategoryManager:rm_category("test")
-CategoryManager:list_categories()
-local ci, ct = CategoryManager:get_category("Default")
-print(ci, ct.name)
-ct:rm_task(1)
-ct:add_task("ok")
-ct:list_tasks()
---]=]
-
----[====[ cli commands
 
 
 parser:command_target("command")
@@ -53,45 +47,50 @@ local cmds = {
 	add = {
 		text = "add",
 		summary = "Add a new task.",
-		call = function(args) print("Add") end,
+		call = function(args) cmds_functions.add(args) end,
 		arguments = {
-			{ "content", 'The task content text. (between " ")' }
+			{ { "content", 'The task content text. (between " ")' } }
 		},
-		options = {
+		options = { -- add priority of the task in the future
 			common_option_cat,
 		},
-		flags = {},
+		flags = {
+			{ "-N --new-category", "To add new category (content will be the name)" },
+		},
 	},
 	list = {
 		text = "list",
 		summary = "List all tasks.",
-		call = function(args) print("List") end,
+		call = function(args) cmds_functions.list(args) end,
 		arguments = {},
 		options = {
 			common_option_cat,
 		},
 		flags = {
-			{ "-C --categories", "List from All categories" },
+			{ "-L --list-all",   "List tasks from All categories" },
+			{ "-C --categories", "List All categories" },
 		},
 	},
 	rm = {
 		text = "rm",
 		summary = "Remove a task.",
-		call = function(args) print("Remove") end,
+		call = function(args) cmds_functions.rm(args) end,
 		arguments = {
-			common_argument_index,
+			{ common_argument_index, "?" },
 		},
+
 		options = {
 			common_option_cat,
+			{ "-N --rm-cat", "Remove a category" },
 		},
 		flags = {},
 	},
 	check = {
 		text = "check",
 		summary = "Check a task.",
-		call = function(args) print("Check") end,
+		call = function(args) cmds_functions.check(args) end,
 		arguments = {
-			common_argument_index,
+			{ common_argument_index },
 		},
 		options = {
 			common_option_cat,
@@ -103,8 +102,8 @@ local cmds = {
 		summary = "Edit a task.",
 		call = function(args) print("Edit") end,
 		arguments = {
-			common_argument_index,
-			{ "content", "The new content of the task." }
+			{ common_argument_index },
+			{ { "content", "The new content of the task." } },
 		},
 		options = {
 			common_option_cat,
@@ -112,31 +111,35 @@ local cmds = {
 		flags = {},
 	},
 }
-
+-- for each command (add, rm, ...)
 for k, cmd in pairs(cmds) do
+	-- New command parser
 	local parser_cmd = parser:command(cmd.text):summary(cmd.summary)
+	-- Add arguments
 	for k, argument in ipairs(cmd.arguments) do
-		parser_cmd:argument(unpack(argument))
+		if argument[2] then
+			parser_cmd:argument(unpack(argument[1])):args(argument[2])
+		else
+			parser_cmd:argument(unpack(argument[1]))
+		end
 	end
+	-- add options
 	for k, option in ipairs(cmd.options) do
 		parser_cmd:option(unpack(option))
 	end
+	-- add flags
 	for k, flag in ipairs(cmd.flags) do
 		parser_cmd:flag(unpack(flag))
 	end
 end
 
-
---]====]
-
--- ARGS variable
 local args = parser:parse()
-
-
-
+-- get the active selected command
 local active_command = args.command
 for k, v in pairs(cmds) do
+	-- check what command is
 	if active_command == v.text then
 		v.call(args)
+		break
 	end
 end

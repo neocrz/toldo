@@ -60,12 +60,12 @@ return function(DB)
         for k, v in pairs(self.tasks) do
             local check = ""
             if v.check then
-                check = " [-] "
+                check = ". [x]"
             else
-                check = " [ ] "
+                check = ". [ ]"
             end
 
-            print(k .. check .. "| " .. v.priority .. " | -> " .. v.content)
+            print(k .. check .. "(" .. v.priority .. ") -> " .. v.content)
         end
     end
 
@@ -128,6 +128,14 @@ return function(DB)
                 return k, Category(v.name, v.tasks)
             end
         end
+        return false
+    end
+
+    function CategoryManager:to_category(tb)
+        if tb.name and tb.tasks then
+            return Category(tb.name, tb.tasks)
+        end
+        print("CategoryManager:to_category -> Received table does not have name or tasks itens")
         return false
     end
 
