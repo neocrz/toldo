@@ -29,10 +29,10 @@ Commands:
   - [x] List task
   - [x] Remove task
   - [x] Check task
-- [x] Categories
-- [x] Add categories
-- [x] List categories
-- [x] Default category
+- [ ] Categories
+  - [x] Add categories
+  - [x] List categories
+  - [x] Default category
 
 Using [flatdb](https://github.com/uleelx/FlatDB) by [uleelx](https://github.com/uleelx) to store todos.
 Using [Classic](https://github.com/rxi/classic) by [rxi](https://github.com/rxi) to OOP on the Category Manager.
