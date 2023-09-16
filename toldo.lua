@@ -47,7 +47,7 @@ common_argument_index = { "index", "Index of the task (use `toldo list` to get t
 local cmds = {
 	add = {
 		text = "add",
-		summary = "Add a new task.",
+		summary = "Add a new task or category.",
 		call = function(args) cmds_functions.add(args) end,
 		arguments = {
 			{ { "content", 'The task content text. (between " ")' } }
@@ -61,7 +61,7 @@ local cmds = {
 	},
 	list = {
 		text = "list",
-		summary = "List all tasks.",
+		summary = "List categories tasks.",
 		call = function(args) cmds_functions.list(args) end,
 		arguments = {},
 		options = {
@@ -74,7 +74,7 @@ local cmds = {
 	},
 	rm = {
 		text = "rm",
-		summary = "Remove a task.",
+		summary = "Remove a task or category.",
 		call = function(args) cmds_functions.rm(args) end,
 		arguments = {
 			{ common_argument_index, "?" },
